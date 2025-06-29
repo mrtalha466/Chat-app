@@ -6,6 +6,9 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js"
   },
+  "engines": {
+    "node": "18.x"
+  },
   "author": "",
   "type": "module",
   "license": "ISC",
