@@ -47,52 +47,59 @@ export const useChatStore = create((set, get) => ({
         }
     },
    subscribeToMessages: () => {
-  const socket = useAuthStore.getState().socket;
+    const socket = useAuthStore.getState().socket;
 
-  if (!socket) {
-    console.warn("Socket not connected");
-    return;
-  }
-
-  socket.on("newMessage", (newMessage) => {
-    const { selectedUser, users } = get();
-
-    // ✅ Always toast
-    toast.success(`📨 New message from ${newMessage.senderName || "a user"}`);
-
-    // ✅ Native notification
-    if (Notification.permission === "granted") {
-      new Notification("New Message", {
-        body: `From ${newMessage.senderName || "Someone"}: ${newMessage.text}`,
-      });
-    } else if (Notification.permission !== "denied") {
-      Notification.requestPermission();
+    if (!socket) {
+      console.warn("Socket not connected");
+      return;
     }
 
-    // ✅ Add to chat if that user is selected
-    if (selectedUser && newMessage.senderId === selectedUser._id) {
-      set((state) => ({
-        messages: [...state.messages, newMessage],
-      }));
-    }
+    socket.on("newMessage", (newMessage) => {
+      const { selectedUser, users } = get();
 
-    // ✅ Even if no user is selected, mark sender as unread
-    if (users.length > 0) {
-      set((state) => ({
-        users: state.users.map((user) =>
-          user._id === newMessage.senderId
-            ? { ...user, hasUnread: true }
-            : user
-        ),
-      }));
-    }
-  });
-},
+      // ✅ Toast & browser notification
+      toast.success(`📨 New message from ${newMessage.senderName || "a user"}`);
+      if (Notification.permission === "granted") {
+        new Notification("New Message", {
+          body: `From ${newMessage.senderName || "Someone"}: ${newMessage.text}`,
+        });
+      } else if (Notification.permission !== "denied") {
+        Notification.requestPermission();
+      }
+
+      // ✅ Add to chat if from selected user
+      if (selectedUser && newMessage.senderId === selectedUser._id) {
+        set(state => ({
+          messages: [...state.messages, newMessage],
+        }));
+      }
+
+      // ✅ Update unread count
+      if (users.length > 0) {
+        set(state => ({
+          users: state.users.map(user =>
+            user._id === newMessage.senderId
+              ? { ...user, unreadCount: (user.unreadCount || 0) + 1 }
+              : user
+          )
+        }));
+      }
+    });
+  },
     unSubscribeFromMessages: () => {
         const socket = useAuthStore.getState().socket;
         socket.off("newMessage");
     }
     ,
-    setSelectUser: (selectedUser) => set({ selectedUser })
+   setSelectUser: (selectedUser) => {
+    set(state => ({
+      selectedUser,
+      users: state.users.map(user =>
+        user._id === selectedUser._id
+          ? { ...user, unreadCount: 0 }
+          : user
+      ),
+    }));
+  },
 
 }));
