@@ -51,7 +51,7 @@ export const useAuthStore = create((set, get) => ({
             toast.success("Login Succesfully")
             get().connectSocket()
         } catch (error) {
-            toast.error(error?.response?.data?.message || "Something went wrong");
+            toast.error(error.response.data.message || "Something went wrong");
         } finally {
             set({ isLoggingUp: false })
         }
@@ -63,7 +63,8 @@ export const useAuthStore = create((set, get) => ({
             toast.success("Logged Out Succesfully")
             get().disconnectSocket()
         } catch (error) {
-            toast.error(error?.response?.data?.message || "Something went wrong");
+            toast.error(error.response.data.message || "Something went wrong");
+
         }
     },
     upadeProfile: async (data) => {
