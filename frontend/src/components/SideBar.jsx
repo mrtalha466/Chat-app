@@ -69,6 +69,14 @@ const SideBar = () => {
               {onlineUsers.includes(user._id) && (
                 <span className="absolute bottom-0 right-0 size-3 bg-green-500 rounded-full ring-2 ring-zinc-900" />
               )}
+
+              
+               {/* Unread badge */}
+              {user.unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full shadow-md">
+                  {user.unreadCount > 99 ? "99+" : user.unreadCount}
+                </span>
+              )}
             </div>
 
             {/* User info - only visible on larger screens */}
