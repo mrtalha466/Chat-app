@@ -11,7 +11,7 @@ import { useAuthStore } from './store/useAuthStore'
 import { Loader } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
 import { useThemeStore } from './store/useThemeStore'
-
+import { useChatStore } from './store/useChatStore'
 
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth,onlineUsers } = useAuthStore();
@@ -20,6 +20,17 @@ const App = () => {
   useEffect(() => {
     checkAuth()
   }, [checkAuth])
+
+  useEffect(() => {
+  if (authUser) {
+    useChatStore.getState().getUsers();
+    useChatStore.getState().subscribeToMessages();
+
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+  }
+}, [authUser]);
 
   // console.log("Auth User:", authUser);
 
