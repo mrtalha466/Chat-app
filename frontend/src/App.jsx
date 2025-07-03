@@ -15,6 +15,7 @@ import { useChatStore } from './store/useChatStore'
 
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth,onlineUsers } = useAuthStore();
+  const { getUsers, subscribeToMessages } = useChatStore();
   const { theme } = useThemeStore()
   // console.log("getonline users",onlineUsers)
   useEffect(() => {
