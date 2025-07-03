@@ -57,7 +57,7 @@ export const useChatStore = create((set, get) => ({
     socket.on("newMessage", (newMessage) => {
       const { selectedUser, users } = get();
 
-      // ✅ Toast & browser notification
+      //  Toast & browser notification
       toast.success(`📨 New message from ${newMessage.senderName || "a user"}`);
       if (Notification.permission === "granted") {
         new Notification("New Message", {
@@ -67,14 +67,14 @@ export const useChatStore = create((set, get) => ({
         Notification.requestPermission();
       }
 
-      // ✅ Add to chat if from selected user
+      //  Add to chat if from selected user
       if (selectedUser && newMessage.senderId === selectedUser._id) {
         set(state => ({
           messages: [...state.messages, newMessage],
         }));
       }
 
-      // ✅ Update unread count
+      //  Update unread count
       if (users.length > 0) {
         set(state => ({
           users: state.users.map(user =>
@@ -86,20 +86,25 @@ export const useChatStore = create((set, get) => ({
       }
     });
   },
-    unSubscribeFromMessages: () => {
+unSubscribeFromMessages: () => {
         const socket = useAuthStore.getState().socket;
         socket.off("newMessage");
+    },
+ setSelectUser: (selectedUser) => {
+  set(state => {
+    if (!selectedUser) {
+      return { selectedUser: null };
     }
-    ,
-   setSelectUser: (selectedUser) => {
-    set(state => ({
+
+    return {
       selectedUser,
       users: state.users.map(user =>
         user._id === selectedUser._id
           ? { ...user, unreadCount: 0 }
           : user
       ),
-    }));
-  },
+    };
+  });
+},
 
 }));
